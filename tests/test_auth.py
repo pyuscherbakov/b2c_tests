@@ -1,13 +1,17 @@
-from core.api.authorization import get_token
 from core.api.authorization.data import schema
+from core.api.endpoints import AUTH
 from jsonschema import validate
+import settings
+import pytest
 
 
 class TestAuth:
-    def test_get_token(self):
-        r = get_token()
-        assert r.status_code == 200
+    def test_get_token(self, test_api):
+        user = settings.default_user
+        response = test_api.post(AUTH, verify=False, json={"email": user[0], "password": user[1]})
+        assert response.status_code == 200
 
-    def test_check_validate_response_json_schema(self):
-        r = get_token()
-        validate(r.json(), schema)
+    def test_check_validate_response_json_schema(self, test_api):
+        user = settings.default_user
+        response = test_api.post(AUTH, verify=False, json={"email": user[0], "password": user[1]})
+        validate(response.json(), schema)
