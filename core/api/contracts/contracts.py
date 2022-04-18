@@ -4,6 +4,7 @@ from core.api.endpoints import CONTRACTS
 from core.api.contracts.data import body_create_contract, body_create_calculation
 from core.api.authorization import get_token
 import settings
+import allure
 
 
 class Contract:
@@ -11,6 +12,7 @@ class Contract:
         self.contract_id = None
         self.token = get_token()
 
+    @allure.step("Создать контракт")
     def create_contracts(self, franchise):
         url = settings.base_url + CONTRACTS.CREATE
         headers = {'Authorization': f'Bearer {self.token}'}
@@ -19,15 +21,18 @@ class Contract:
         response = r.json()
         self.contract_id = response["data"]["id"]
 
+    @allure.step("Получить contract ID")
     def get_contract_id(self):
         return self.contract_id
 
+    @allure.step("Создать расчет")
     def create_calculation(self, product):
         headers = {'Authorization': f'Bearer {self.token}'}
         url = settings.base_url + CONTRACTS.CALCULATE.format(self.contract_id)
         body_create_calculation["products"][0]["id"] = product
         r = requests.post(url, verify=False, headers=headers, json=body_create_calculation)
 
+    @allure.step("Получить расчет")
     def get_calculation(self):
         headers = {'Authorization': f'Bearer {self.token}'}
         url = settings.base_url + CONTRACTS.CALCULATE.format(self.contract_id)

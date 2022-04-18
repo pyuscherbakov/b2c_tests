@@ -1,10 +1,12 @@
 import pytest
 from core.api.contracts.contracts import Contract
 from core.api.agreements.agreements import Agreement
+import allure
 
 
 @pytest.mark.parametrize("product", ["ingos_kasko", "alfastrah_kasko"])
 @pytest.mark.parametrize("franchise", ["Нет", "Безусловная 15 тыс."])
+@allure.feature('Оформление договора')
 class Test:
     def test_issue_agreement(self, product, franchise):
         contract = Contract()

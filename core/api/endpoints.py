@@ -1,7 +1,7 @@
 
 
 AUTH = "/api/v1/auth"
-PROFILE = "/profile"
+PROFILE = "/api/v1/profile"
 
 
 class CONTRACTS:
