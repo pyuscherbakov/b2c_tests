@@ -11,5 +11,3 @@ class TestAuth:
     def test_check_validate_response_json_schema(self):
         r = get_token()
         validate(r.json(), schema)
-
-
