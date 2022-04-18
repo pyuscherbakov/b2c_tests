@@ -1,4 +1,4 @@
-from .token import Token
+from .auth import Token
 
 get_token = Token.get_token
 

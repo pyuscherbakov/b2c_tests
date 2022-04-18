@@ -20,5 +20,5 @@ class ApiClient:
 
 
 @pytest.fixture
-def test():
+def test_api():
     return ApiClient(base_address="https://b2c.test.fast-system.ru")

@@ -9,5 +9,5 @@ class Token:
         url = settings.base_url + AUTH
         user = settings.default_user
         r = requests.post(url, verify=False, json={"email": user[0], "password": user[1]})
-        return r.json()["data"]["token"]
+        return r
 
