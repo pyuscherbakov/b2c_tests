@@ -8,6 +8,6 @@
 git clone https://github.com/pyuscherbakov/b2c_tests
 cd b2c_tests
 pip install -r requirements.txt 
-python3 -n=auto pytest --alluredir=./allure-results tests/
-allure serve ./allure-results/
+pytest --alluredir=./allure-results
+allure serve allure-results
 ```
