@@ -13,7 +13,7 @@
 
 Для успешного запуска тестов требуется  [Python](https://www.python.org/) v3+.
 
-Bash скрипт для запуска
+Bash скрипт для запуска:
 ```sh
 #!/bin/bash
 git clone https://github.com/pyuscherbakov/b2c_tests 
