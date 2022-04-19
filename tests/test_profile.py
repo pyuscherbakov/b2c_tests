@@ -1,4 +1,5 @@
 from core.api.authorization import get_token
+from core.utils.api_client import test_api_url
 from core.api.endpoints import PROFILE
 from core.api.profile.data import schema
 from jsonschema import validate

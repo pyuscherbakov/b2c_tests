@@ -1,4 +1,5 @@
 from core.api.authorization.data import schema
+from core.utils.api_client import test_api_url
 from jsonschema import validate
 from core.api.endpoints import AUTH
 import settings
