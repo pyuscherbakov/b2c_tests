@@ -16,5 +16,5 @@ class TestProfile:
         with allure.step("Проверить статус код ответа"):
             assert response.status_code == 200
         with allure.step("Проверить схему ответа"):
-            return validate(response.json(), schema)
+            validate(response.json(), schema)
 
