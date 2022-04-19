@@ -20,6 +20,7 @@ class ApiClient:
         url = f"{self.base_address}{path}"
         with allure.step(f'Отправить GET запрос: {url}'):
             r = requests.get(url=url, params=params, headers=headers, verify=verify)
+            allure.attach(r.text, 'Тело ответа', allure.attachment_type.JSON)
             return r
 
     def put(self, path="/", params=None, data=None, json=None, headers=None, verify=None):

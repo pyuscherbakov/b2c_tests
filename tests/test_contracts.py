@@ -21,4 +21,13 @@ class TestContracts:
         contract.create_contract()
         contract.create_calculation(product)
 
+    @pytest.mark.parametrize("product", ["ingos_kasko", "alfastrah_kasko"])
+    @pytest.mark.parametrize("franchise", ["Нет", "Безусловная 15 тыс."])
+    @allure.feature('Контракт')
+    @allure.title('Получить расчет')
+    def test_get_calculation(self, franchise, product):
+        contract = Contract(franchise)
+        contract.create_contract()
+        contract.create_calculation(product)
+        contract.get_calculation()
 
