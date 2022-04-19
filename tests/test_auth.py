@@ -5,9 +5,8 @@ from core.api.endpoints import AUTH
 import settings
 import allure
 
-"""
-Написать проверку на авторизацию с невалидным аккаунтом
-"""
+
+# TODO: Написать проверку на авторизацию с невалидным аккаунтом
 
 
 class TestAuth:

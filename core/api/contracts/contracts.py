@@ -10,10 +10,11 @@ import allure
 
 
 class Contract:
+    base_url = ApiClient(settings.base_url)
+
     def __init__(self, franchise):
         self.contract_id = None
         self.token = get_token()
-        self.base_url = ApiClient(settings.base_url)
         self.franchise = franchise
 
     @allure.step("Создать контракт")
@@ -29,7 +30,6 @@ class Contract:
         response = response.json()
         self.contract_id = response["data"]["id"]
 
-    @allure.step("Получить contract ID")
     def get_contract_id(self):
         return self.contract_id
 
@@ -40,7 +40,6 @@ class Contract:
                                       headers={'Authorization': f'Bearer {self.token}'},
                                       json=data.body_create_calculation)
         with allure.step("Проверить статус код ответа (202)"):
-            print(response.json())
             assert response.status_code == 202, f"Ожидался статус код 202, получен {response.status_code}"
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_create_calculation)
