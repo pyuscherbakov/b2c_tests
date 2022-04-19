@@ -361,3 +361,15 @@ schema_create_contract = {
         }
     }
 }
+
+schema_create_calculation = {
+    "type": "object",
+    "required": ["messages"],
+    "properties": {
+        "messages": {
+            "type": "array",
+            "items": {"anyOf": [{"type": "string"}]}
+        }
+    },
+    "additionalProperties": False
+}
