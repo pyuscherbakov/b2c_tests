@@ -1,7 +1,5 @@
 import time
-import hamcrest
 import requests
-from hamcrest import assert_that, equal_to
 
 from core.api.endpoints import AGREEMENTS
 from core.api.agreements.data import body_create_agreement
