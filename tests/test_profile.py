@@ -1,4 +1,3 @@
-from core.utils import check
 from core.api.authorization import get_token
 from core.api.endpoints import PROFILE
 from core.api.profile.data import schema
