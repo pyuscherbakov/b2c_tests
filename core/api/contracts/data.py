@@ -144,3 +144,220 @@ body_create_contract = {
 }
 
 body_create_calculation = {"products": [{"id": ""}]}
+
+schema_create_contract = {
+    "type": "object",
+    "required": ["data"],
+    "properties": {
+        "data": {
+            "type": "object",
+            "required": ["id", "contract"],
+            "properties": {
+                "id": {"type": "string"},
+                "contract": {
+                    "type": "object",
+                    "required": ["vehicle", "insurer", "owner", "drivers_min_age", "drivers_min_exp", "drivers", "terms"],
+                    "properties": {
+                        "vehicle": {
+                            "type": "object",
+                            "required": ["cost", "category", "mark", "model", "year", "power", "mileage",
+                                         "engine_volume", "engine_type", "body_number", "chassis_number",
+                                         "engine_number", "licence_plate", "vin", "pts", "sts"
+                            ],
+                            "properties": {
+                                "cost": {"type": "number"},
+                                "category": {"type": "string"},
+                                "mark": {"type": "string"},
+                                "model": {"type": "string"},
+                                "year": {"type": "integer"},
+                                "power": {"type": "integer"},
+                                "mileage": {"type": "integer"},
+                                "engine_volume": {"type": "integer"},
+                                "engine_type": {"type": "string"},
+                                "body_number": {"type": "string"},
+                                "chassis_number": {"type": "string"},
+                                "engine_number": {"type": "string"},
+                                "licence_plate": {"type": "string"},
+                                "vin": {"type": "string"},
+                                "pts": {
+                                    "type": "object",
+                                    "required": ["series", "number", "issue_date"],
+                                    "properties": {
+                                        "series": {"type": "string"},
+                                        "number": {"type": "string"},
+                                        "issue_date": {"type": "string"}
+                                    }
+                                },
+                                "sts": {
+                                    "type": "object",
+                                    "required": ["series", "number","issue_date"],
+                                    "properties": {
+                                        "series": {"type": "string"},
+                                        "number": {"type": "string"},
+                                        "issue_date": {"type": "string"}
+                                    }
+                                }
+                            }
+                        },
+                        "insurer": {
+                            "type": "object",
+                            "required": ["physical"],
+                            "properties": {
+                                "physical": {
+                                    "type": "object",
+                                    "required": ["birth_date", "last_name", "first_name", "middle_name", "sex",
+                                                 "married", "children", "passport", "registration_address", "phone",
+                                                 "email"],
+                                    "properties": {
+                                        "birth_date": {"type": "string"},
+                                        "last_name": {"type": "string"},
+                                        "first_name": {"type": "string"},
+                                        "middle_name": {"type": "string"},
+                                        "sex": {"type": "string"},
+                                        "married": {"type": "boolean"},
+                                        "children": {"type": "integer"},
+                                        "passport": {
+                                            "type": "object",
+                                            "required": ["series", "number", "issue_date", "issued_by",
+                                                         "department_code", "birth_place"],
+                                            "properties": {
+                                                "series": {"type": "string"},
+                                                "number": {"type": "string"},
+                                                "issue_date": {"type": "string"},
+                                                "issued_by": {"type": "string"},
+                                                "department_code": {"type": "string"},
+                                                "birth_place": {"type": "string"}
+                                            }
+                                        },
+                                        "registration_address": {
+                                            "type": "object",
+                                            "required": ["country", "region", "city", "district", "street", "house",
+                                                         "building", "apartment", "fias"],
+                                            "properties": {
+                                                "country": {"type": "string"},
+                                                "region": {"type": "string"},
+                                                "city": {"type": "string"},
+                                                "district": {"type": "null"},
+                                                "street": {"type": "string"},
+                                                "house": {"type": "integer"},
+                                                "building": {"type": "null"},
+                                                "apartment": {"type": "null"},
+                                                "fias": {"type": "null"}
+                                            }
+                                        },
+                                        "phone": {"type": "string"},
+                                        "email": {"type": "string"}
+                                    }
+                                }
+                            }
+                        },
+                        "owner": {
+                            "type": "object",
+                            "required": ["physical"],
+                            "properties": {
+                                "physical": {
+                                    "type": "object",
+                                    "required": ["birth_date", "last_name", "first_name", "middle_name", "sex",
+                                                 "married", "children", "passport", "registration_address", "phone",
+                                                 "email"],
+                                    "properties": {
+                                        "birth_date": {"type": "string"},
+                                        "last_name": {"type": "string"},
+                                        "first_name": {"type": "string"},
+                                        "middle_name": {"type": "string"},
+                                        "sex": {"type": "string"},
+                                        "married": {"type": "boolean"},
+                                        "children": {"type": "integer"},
+                                        "passport": {
+                                            "type": "object",
+                                            "required": ["series", "number", "issue_date", "issued_by",
+                                                         "department_code", "birth_place"],
+                                            "properties": {
+                                                "series": {"type": "string"},
+                                                "number": {"type": "string"},
+                                                "issue_date": {"type": "string"},
+                                                "issued_by": {"type": "string"},
+                                                "department_code": {"type": "string"},
+                                                "birth_place": {"type": "string"}
+                                            }
+                                        },
+                                        "registration_address": {
+                                            "type": "object",
+                                            "required": ["country", "region", "city", "district", "street", "house",
+                                                         "building", "apartment", "fias"],
+                                            "properties": {
+                                                "country": {"type": "string"},
+                                                "region": {"type": "string"},
+                                                "city": {"type": "string"},
+                                                "district": {"type": "null"},
+                                                "street": {"type": "string"},
+                                                "house": {"type": "integer"},
+                                                "building": {"type": "null"},
+                                                "apartment": {"type": "null"},
+                                                "fias": {"type": "null"}
+                                            }
+                                        },
+                                        "phone": {"type": "string"},
+                                        "email": {"type": "string"}
+                                    }
+                                }
+                            }
+                        },
+                        "drivers_min_age": {"type": "integer"},
+                        "drivers_min_exp": {"type": "integer"},
+                        "drivers": {
+                            "type": "array",
+                            "items": {
+                                "anyOf": [
+                                    {
+                                        "type": "object",
+                                        "required": ["birth_date", "last_name", "first_name", "middle_name", "sex",
+                                                     "married", "children", "driver_license", "registration_address"],
+                                        "properties": {
+                                            "birth_date": {"type": "string"},
+                                            "last_name": {"type": "string"},
+                                            "first_name": {"type": "string"},
+                                            "middle_name": {"type": "string"},
+                                            "sex": {"type": "string"},
+                                            "married": {"type": "boolean"},
+                                            "children": {"type": "integer"},
+                                            "driver_license": {
+                                                "type": "object",
+                                                "required": ["series", "number", "issue_date", "driving_experience_date"],
+                                                "properties": {
+                                                    "series": {"type": "string"},
+                                                    "number": {"type": "string"},
+                                                    "issue_date": {"type": "string"},
+                                                    "driving_experience_date": {"type": "string"}
+                                                }
+                                            },
+                                            "registration_address": {
+                                                "type": "object",
+                                                "required": ["country", "region", "city", "district", "street",
+                                                             "house", "building", "apartment", "fias"],
+                                                "properties": {
+                                                    "country": {"type": "string"},
+                                                    "region": {"type": "string"},
+                                                    "city": {"type": "string"},
+                                                    "district": {"type": "null"},
+                                                    "street": {"type": "string"},
+                                                    "house": {"type": "integer"},
+                                                    "building": {"type": "null"},
+                                                    "apartment": {"type": "null"},
+                                                    "fias": {"type": "null"}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "terms": {
+                            "type": "object",
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
