@@ -18,5 +18,8 @@ class TestAuth:
         response = test_api_url.post(AUTH, verify=False, json={"email": user[0], "password": user[1]})
         with allure.step("Проверить статус код ответа"):
             assert response.status_code == 200
+        with allure.step("Токен получен"):
+            assert response.json()["data"]["token"] is not None
         with allure.step("Проверить схему ответа"):
             validate(response.json(), schema)
+
