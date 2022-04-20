@@ -2,6 +2,7 @@ import pytest
 import requests
 import allure
 import json as m_json
+from settings import base_url
 
 
 class ApiClient:
@@ -35,4 +36,4 @@ class ApiClient:
 @pytest.fixture
 @allure.title("Получить URL")
 def test_api_url():
-    return ApiClient(base_address="https://b2c.test.fast-system.ru")
+    return ApiClient(base_address=base_url)

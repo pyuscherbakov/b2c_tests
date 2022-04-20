@@ -1,5 +1,4 @@
 import time
-import requests
 from core.utils.api_client import ApiClient
 from core.api.endpoints import AGREEMENTS
 from core.api.agreements.data import body_create_agreement
@@ -77,13 +76,17 @@ class Agreement:
 
     @allure.step("Получить ссылку на оплату")
     def get_payment_url(self):
-        url = settings.base_url + AGREEMENTS.ISSUE.format(self.agreement_id)
-        headers = {'Authorization': f'Bearer {self.token}'}
-        r = requests.post(url, verify=False, headers=headers)
-        assert r.json().get("payment_url"), "Ссылка на оплату не получена"
-        if r.json().get("payment_url"):
-            print(f"Контракт: {self.contract_id}\nДоговор: {self.agreement_id}")
-            print(f"Ссылка на оплату: {r.json()['payment_url']}")
-            print(f"Ссылка действительна до: {r.json()['payment_url_lifetime']}")
-        else:
-            print(r.json())
+        response = self.base_url.post(AGREEMENTS.ISSUE.format(self.agreement_id), verify=False,
+                                      headers={'Authorization': f'Bearer {self.token}'},
+                                      json=body_create_agreement)
+        assert response.json().get("payment_url"), "Ссылка на оплату не получена"
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code in [200, 202], f"Ожидался статус код 200 или 202, " \
+                                                       f"получен {response.status_code}"
+        assert response.json().get("payment_url"), "Ссылка на оплату не получена"
+        if response.json().get("payment_url"):
+            res = f"Контракт: {self.contract_id}\nДоговор: {self.agreement_id}\n" \
+                  f"Ссылка на оплату: {response.json()['payment_url']}\n" \
+                  f"Ссылка действительна до: {response.json()['payment_url_lifetime']}"
+            allure.attach(res, 'Ссылка на оплату', allure.attachment_type.TEXT)
+
