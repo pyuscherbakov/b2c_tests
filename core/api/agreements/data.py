@@ -19,3 +19,13 @@ schema_with_success = {
     "required": ["id"],
     "properties": {"id": {"type": "string"}}
 }
+
+schema_issue_agreement = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["status", "errors"],
+    "properties": {
+        "status": {"type": "string"},
+        "errors": {"type": "array","items": {}}
+    }
+}

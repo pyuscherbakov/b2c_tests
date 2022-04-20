@@ -36,14 +36,21 @@ class Agreement:
             # TODO: убрать шаги повторного вызова метода создания договора из отчетов
             self.create_agreement()
         else:
+            self.agreement_id = response["id"]
             with allure.step(f"Проверить схему успешного ответа"):
                 validate(response, data.schema_with_success)
-            self.agreement_id = response['id']
 
+    @allure.step("Оформить договор")
     def issue_agreement(self):
-        url = settings.base_url + AGREEMENTS.ISSUE.format(self.agreement_id)
-        headers = {'Authorization': f'Bearer {self.token}'}
-        r = requests.post(url, verify=False, headers=headers)
+        response = self.base_url.post(AGREEMENTS.ISSUE.format(self.agreement_id), verify=False,
+                                      headers={'Authorization': f'Bearer {self.token}'},
+                                      json=body_create_agreement)
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code in [200, 202], f"Ожидался статус код 200 или 202, " \
+                                                       f"получен {response.status_code}"
+        response = response.json()
+        with allure.step(f"Проверить схему ответа"):
+            validate(response, data.schema_issue_agreement)
 
     def agreement_get_status(self):
         headers = {'Authorization': f'Bearer {self.token}'}
