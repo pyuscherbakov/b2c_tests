@@ -9,8 +9,8 @@ import allure
 class Test:
     @pytest.mark.parametrize("product", ["ingos_kasko", "alfastrah_kasko"])
     @pytest.mark.parametrize("franchise", ["Нет", "Безусловная 15 тыс."])
-    @allure.feature('Оформление договора')
-    @allure.title(f'Оформить договор')
+    @allure.feature('Договор')
+    @allure.story('Оформить договор')
     def test_issue_agreement(self, product, franchise):
         contract = Contract(franchise)
         contract.create_contract()

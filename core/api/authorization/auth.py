@@ -1,6 +1,4 @@
-from jsonschema import validate
 from core.api.endpoints import AUTH
-from core.api.authorization.data import schema
 from core.utils.api_client import *
 import settings
 import allure

@@ -29,3 +29,13 @@ schema_issue_agreement = {
         "errors": {"type": "array","items": {}}
     }
 }
+
+schema_get_status = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["status", "errors"],
+    "properties": {
+        "status": {"type": "string"},
+        "errors": {"type": "array","items": {}}
+    }
+}

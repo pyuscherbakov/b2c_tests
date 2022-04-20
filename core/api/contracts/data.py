@@ -405,11 +405,15 @@ schema_get_calculation = {
                                 "properties": {
                                     "kasko": {
                                         "type": "object",
-                                        "required": ["start_date", "end_date", "franchise"],
+                                        "required": ["start_date", "end_date", "franchise", "start_exploitation_date",
+                                                     "bank", "purchase_date"],
                                         "properties": {
                                             "start_date": {"type": "string"},
                                             "end_date": {"type": "string"},
-                                            "franchise": {"type": "string"}},
+                                            "franchise": {"type": "string"},
+                                            "start_exploitation_date": {"type": "string"},
+                                            "bank": {"type": "string"},
+                                            "purchase_date": {"type": "string"}},
                                         "additionalProperties": False}},
                                 "additionalProperties": False}},
                         "additionalProperties": False
