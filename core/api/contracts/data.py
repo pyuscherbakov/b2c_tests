@@ -373,3 +373,50 @@ schema_create_calculation = {
     },
     "additionalProperties": False
 }
+
+schema_get_calculation = {
+    "type": "object",
+    "required": ["products"],
+    "properties": {
+        "products": {
+            "type": "array",
+            "additionalItems": False,
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "required": ["id", "premium", "status", "expired_at", "messages", "errors", "terms"],
+                        "properties": {
+                            "id": {"type": "string"},
+                            "premium": {"type": "integer"},
+                            "status": {"type": "string"},
+                            "expired_at": {"type": "string"},
+                            "messages": {
+                                "type": "array",
+                                "additionalItems": False,
+                                "items": {}},
+                            "errors": {
+                                "type": "array",
+                                "additionalItems": False,
+                                "items": {}},
+                            "terms": {
+                                "type": "object",
+                                "required": ["kasko"],
+                                "properties": {
+                                    "kasko": {
+                                        "type": "object",
+                                        "required": ["start_date", "end_date", "franchise"],
+                                        "properties": {
+                                            "start_date": {"type": "string"},
+                                            "end_date": {"type": "string"},
+                                            "franchise": {"type": "string"}},
+                                        "additionalProperties": False}},
+                                "additionalProperties": False}},
+                        "additionalProperties": False
+                    }
+                ]
+            }
+        }
+    },
+    "additionalProperties": False
+}

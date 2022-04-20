@@ -1,5 +1,4 @@
 import time
-import requests
 from core.api.endpoints import CONTRACTS
 from core.utils.api_client import ApiClient
 from core.api.contracts import data
@@ -28,6 +27,8 @@ class Contract:
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_create_contract)
         response = response.json()
+        with allure.step("Полученное в ответе поле ID не пустое"):
+            assert response["data"]["id"] is not None
         self.contract_id = response["data"]["id"]
 
     def get_contract_id(self):
@@ -39,24 +40,25 @@ class Contract:
         response = self.base_url.post(CONTRACTS.CALCULATE.format(self.contract_id), verify=False,
                                       headers={'Authorization': f'Bearer {self.token}'},
                                       json=data.body_create_calculation)
-        with allure.step("Проверить статус код ответа (202)"):
+        with allure.step("Проверить статус код ответа"):
             assert response.status_code == 202, f"Ожидался статус код 202, получен {response.status_code}"
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_create_calculation)
 
     @allure.step("Получить расчет")
     def get_calculation(self):
-        # headers = {'Authorization': f'Bearer {self.token}'}
-        # url = settings.base_url + CONTRACTS.CALCULATE.format(self.contract_id)
-        # r = requests.get(url, verify=False, headers=headers)
         response = self.base_url.get(CONTRACTS.CALCULATE.format(self.contract_id), verify=False,
                                      headers={'Authorization': f'Bearer {self.token}'})
         status = response.json()["products"][0]["status"]
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
         with allure.step("Проверить статус расчета"):
             if status == "Executing" or status == "InQueue":
                 time.sleep(5)
-                with allure.step(f"Статус расчета {status}. Проверить еще раз."):
+                with allure.step(f"Статус расчета {status}. Проверить расчет еще раз."):
                     self.get_calculation()
             else:
                 assert status == "Success", f"Ожидался статус Success, получен {status} " \
                                             f"с ошибкой {response.json()['products'][0]['errors']}"
+                with allure.step("Проверить схему ответа"):
+                    validate(response.json(), data.schema_get_calculation)
