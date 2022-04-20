@@ -52,23 +52,30 @@ class Agreement:
         with allure.step(f"Проверить схему ответа"):
             validate(response, data.schema_issue_agreement)
 
+    @allure.step("Проверить статус оформления договора")
     def agreement_get_status(self):
-        headers = {'Authorization': f'Bearer {self.token}'}
-        url = settings.base_url + AGREEMENTS.TASK.format(self.agreement_id)
-        r = requests.get(url, verify=False, headers=headers)
-        status = r.json()["status"]
+        response = self.base_url.get(AGREEMENTS.TASK.format(self.agreement_id), verify=False,
+                                     headers={'Authorization': f'Bearer {self.token}'})
+        status = response.json()["status"]
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code == 200
         if status == "Executing" or status == "InQueue":
-            time.sleep(10)
-            self.agreement_get_status()
+            time.sleep(11)
+            with allure.step(f"Повторно проверить статус договора. Статус договора {status}."):
+                self.agreement_get_status()
         else:
             if self.product == "alfastrah_kasko" and \
-                    r.json()['errors'] == ['Неопознанная ошибка в ответе страховой компании']:
-                self.issue_agreement()
+                    response.json()['errors'] == ['Неопознанная ошибка в ответе страховой компании']:
+                with allure.step(f"Повторно отправить запрос на оформление договора."
+                                 f"Обнаружена ошибка {response.json()['errors']}"):
+                    self.issue_agreement()
             else:
-                assert status != "Error", f"Ошибка при оформлении договора{r.json()['errors']}"
-                assert status == "Success", f"Договор не оформлен. {status}"
-                self.get_payment_url()
+                with allure.step(f"Договор не содержит ошибок"):
+                    assert status != "Error", f"Получена ошибка {response.json()['errors']}"
+                with allure.step(f"Договор успешно оформлен"):
+                    assert status == "Success" and status != "Error", f"Договор не оформлен. Статус договора: {status}"
 
+    @allure.step("Получить ссылку на оплату")
     def get_payment_url(self):
         url = settings.base_url + AGREEMENTS.ISSUE.format(self.agreement_id)
         headers = {'Authorization': f'Bearer {self.token}'}
@@ -78,3 +85,5 @@ class Agreement:
             print(f"Контракт: {self.contract_id}\nДоговор: {self.agreement_id}")
             print(f"Ссылка на оплату: {r.json()['payment_url']}")
             print(f"Ссылка действительна до: {r.json()['payment_url_lifetime']}")
+        else:
+            print(r.json())

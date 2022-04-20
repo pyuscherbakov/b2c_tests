@@ -18,4 +18,5 @@ class Test:
         agreement = Agreement(contract.get_contract_id(), product)
         agreement.create_agreement()
         agreement.issue_agreement()
-        # agreement.agreement_get_status()
+        agreement.agreement_get_status()
+        agreement.get_payment_url()
