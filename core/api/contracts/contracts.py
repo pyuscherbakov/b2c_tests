@@ -30,11 +30,12 @@ class Contract:
         with allure.step("Полученное в ответе поле ID не пустое"):
             assert response["data"]["id"] is not None
         self.contract_id = response["data"]["id"]
+        allure.attach(self.contract_id, 'Contract id', allure.attachment_type.TEXT)
 
     def get_contract_id(self):
         return self.contract_id
 
-    @allure.step("Создать расчет")
+    @allure.step(f"Создать расчет")
     def create_calculation(self, product):
         data.body_create_calculation["products"][0]["id"] = product
         response = self.base_url.post(CONTRACTS.CALCULATE.format(self.contract_id), verify=False,

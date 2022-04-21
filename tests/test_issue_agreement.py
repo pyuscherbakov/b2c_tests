@@ -21,3 +21,7 @@ class Test:
         agreement.issue_agreement()
         agreement.agreement_get_status()
         agreement.get_payment_url()
+        res = f"Контракт: {contract.contract_id}\n" \
+              f"Договор: {agreement.agreement_id}\n" \
+              f"Ссылка на оплату: {agreement.payment_link}"
+        allure.attach(res, 'Ссылка на оплату', allure.attachment_type.TEXT)

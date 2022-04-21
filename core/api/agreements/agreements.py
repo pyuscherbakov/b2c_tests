@@ -41,6 +41,7 @@ class Agreement:
                 self.create_agreement()
         else:
             self.agreement_id = response["id"]
+            allure.attach(self.agreement_id, 'Agreement id', allure.attachment_type.TEXT)
             with allure.step(f"Ответ содержит в себе ID договора"):
                 assert response["id"] is not None
             with allure.step(f"Проверить схему успешного ответа"):
