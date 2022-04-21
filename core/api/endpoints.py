@@ -7,6 +7,7 @@ PROFILE = "/api/v1/profile"
 class CONTRACTS:
     CREATE = "/api/v1/contracts"
     CALCULATE = "/api/v1/contracts/{}/calculate"
+    GET_CALCULATE = "/api/v1/contracts/{}"
 
 
 class AGREEMENTS:

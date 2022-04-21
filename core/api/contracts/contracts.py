@@ -63,3 +63,20 @@ class Contract:
                                             f"с ошибкой {response.json()['products'][0]['errors']}"
                 with allure.step("Проверить схему ответа"):
                     validate(response.json(), data.schema_get_calculation)
+
+    @allure.step("Получить контракт")
+    def get_contract(self):
+        response = self.base_url.get(CONTRACTS.GET_CALCULATE.format(self.contract_id), verify=False,
+                                     headers={'Authorization': f'Bearer {self.token}'})
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
+        with allure.step("Проверить отправленный на создание контракт с полученным"):
+            with allure.step("Проверить данные ТС"):
+                for item in response.json()["data"]["vehicle"]:
+                    assert data.body_create_contract["vehicle"][item] == response.json()["data"]["vehicle"][item], \
+                        "Данные ТС отправленные при создании контракта отличаются с полученными данными"
+            with allure.step("Проверить условия страхования"):
+                for item in response.json()["data"]["terms"]:
+                    assert data.body_create_contract["terms"][item] == response.json()["data"]["terms"][item], \
+                        f"Условия отправленные при создании контракта отличаются с полученными условиями"
+
