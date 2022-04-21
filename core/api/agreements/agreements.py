@@ -9,7 +9,6 @@ import settings
 import allure
 from jsonschema import validate
 from datetime import date
-# TODO: реализовать ассерты через humcrest
 
 
 class Agreement:
@@ -30,7 +29,7 @@ class Agreement:
                                       headers={'Authorization': f'Bearer {self.token}'},
                                       json=data.body_create_agreement)
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code in [200, 202]
+            assert_that(response.status_code, is_in([200, 202]))
         response = response.json()
         time.sleep(10)
         if response.get("status"):
@@ -38,7 +37,7 @@ class Agreement:
                 with allure.step(f"Проверить схему ответа при статусе {response['status']}"):
                     validate(response, data.schema_with_not_success)
                 with allure.step(f"Договор не имеет статус 'error'"):
-                    assert response["status"] != "error", "Статус договора Error"
+                    assert_that(response["status"], is_not(equal_to("error")))
                 time.sleep(10)
                 # TODO: убрать шаги повторного вызова метода создания договора из отчетов
                 self.create_agreement()
@@ -46,7 +45,7 @@ class Agreement:
             self.agreement_id = response["id"]
             allure.attach(self.agreement_id, 'Agreement id', allure.attachment_type.TEXT)
             with allure.step(f"Ответ содержит в себе ID договора"):
-                assert response["id"] is not None
+                assert_that(response["id"], is_not(None))
             with allure.step(f"Проверить схему успешного ответа"):
                 validate(response, data.schema_with_success)
 
@@ -56,10 +55,9 @@ class Agreement:
                                       headers={'Authorization': f'Bearer {self.token}'},
                                       json=data.body_create_agreement)
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code in [200, 202], f"Ожидался статус код 200 или 202, " \
-                                                       f"получен {response.status_code}"
+            assert_that(response.status_code, is_in([200, 202]))
         with allure.step(f"Договор встал в очередь на оформление"):
-            assert response.json()["status"] == "InQueue"
+            assert_that(response.json()["status"], equal_to("InQueue"))
         with allure.step(f"Проверить схему ответа"):
             validate(response.json(), data.schema_issue_agreement)
 
@@ -68,9 +66,9 @@ class Agreement:
         response = self.base_url.get(AGREEMENTS.TASK.format(self.agreement_id), verify=False,
                                      headers={'Authorization': f'Bearer {self.token}'})
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Статус выполнения операции получен"):
-            assert response.json().get("status")
+            assert_that(response.json().get("status"))
         status = response.json()["status"]
         if status == "Executing" or status == "InQueue":
             time.sleep(11)
@@ -85,9 +83,9 @@ class Agreement:
                     self.agreement_get_status()
             else:
                 with allure.step(f"Договор не содержит ошибок"):
-                    assert status != "Error", f"Получена ошибка {response.json()['errors']}"
+                    assert_that(status, is_not(equal_to("Error")))
                 with allure.step(f"Договор успешно оформлен"):
-                    assert status == "Success" and status != "Error", f"Договор не оформлен. Статус договора: {status}"
+                    assert_that(status, equal_to("Success"))
                 with allure.step(f"Проверить схему ответа"):
                     validate(response.json(), data.schema_get_status)
 
@@ -96,11 +94,10 @@ class Agreement:
         response = self.base_url.post(AGREEMENTS.ISSUE.format(self.agreement_id), verify=False,
                                       headers={'Authorization': f'Bearer {self.token}'},
                                       json=data.body_create_agreement)
-        assert response.json().get("payment_url"), "Ссылка на оплату не получена"
+        assert_that(response.json().get("payment_url"))
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code in [200, 202], f"Ожидался статус код 200 или 202, " \
-                                                       f"получен {response.status_code}"
-        assert response.json().get("payment_url"), "Ссылка на оплату не получена"
+            assert_that(response.status_code, is_in([200, 202]))
+        assert_that(response.json().get("payment_url"))
         if response.json().get("payment_url"):
             self.payment_link = response.json()['payment_url']
             res = f"Контракт: {self.contract_id}\nДоговор: {self.agreement_id}\n" \
@@ -113,7 +110,7 @@ class Agreement:
         response = self.base_url.get(AGREEMENTS.GET.format(self.agreement_id), verify=False,
                                      headers={'Authorization': f'Bearer {self.token}'})
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить дату оформления договора"):
             assert_that(response.json()["agreement_date"], equal_to(str(date.today())))
         with allure.step("Условия полученного договора совпадают с условями в отправленном контракте при его создании"):
@@ -125,4 +122,7 @@ class Agreement:
         with allure.step("Проверить статус договора"):
             assert_that(response.json()["status"], equal_to(agreement_status))
         with allure.step("Проверить схему ответа"):
+            if agreement_status == "AwaitingPayment" and "payment_url" not in data.schema_get_agreement["properties"]:
+                data.schema_get_agreement["required"].append("payment_url")
+                data.schema_get_agreement["properties"]["payment_url"] = {"type": "string"}
             validate(response.json(), data.schema_get_agreement)

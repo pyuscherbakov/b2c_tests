@@ -6,7 +6,7 @@ import allure
 
 # TODO: Организовать получение токена в фикстуре
 
-class Test:
+class TestsE2E:
     @pytest.mark.parametrize("product", ["ingos_kasko", "alfastrah_kasko"])
     @pytest.mark.parametrize("franchise", ["Нет", "Безусловная 15 тыс."])
     @allure.feature('Договор')
@@ -25,3 +25,4 @@ class Test:
               f"Договор: {agreement.agreement_id}\n" \
               f"Ссылка на оплату: {agreement.payment_link}"
         allure.attach(res, 'Ссылка на оплату', allure.attachment_type.TEXT)
+

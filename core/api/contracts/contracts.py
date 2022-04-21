@@ -6,6 +6,7 @@ from core.api.authorization import get_token
 from jsonschema import validate
 import settings
 import allure
+# TODO: реализовать ассерты через humcrest
 
 
 class Contract:
@@ -80,3 +81,35 @@ class Contract:
                     assert data.body_create_contract["terms"][item] == response.json()["data"]["terms"][item], \
                         f"Условия отправленные при создании контракта отличаются с полученными условиями"
 
+    @allure.step("Обновить контракт")
+    def update_contract(self):
+        response = self.base_url.put(CONTRACTS.UPDATE.format(self.contract_id), verify=False,
+                                     headers={'Authorization': f'Bearer {self.token}'},
+                                     json=data.body_with_update_contract)
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
+        with allure.step("Проверить отправленный на обновление контракт с полученным"):
+            with allure.step("Проверить данные ТС"):
+                for item in response.json()["data"]["vehicle"]:
+                    assert data.body_with_update_contract["vehicle"][item] == response.json()["data"]["vehicle"][item],\
+                        "Данные ТС отправленные при обновлении контракта отличаются с полученными данными"
+            with allure.step("Проверить условия страхования"):
+                for item in response.json()["data"]["terms"]:
+                    assert data.body_with_update_contract["terms"][item] == response.json()["data"]["terms"][item], \
+                        f"Условия отправленные при обновлении контракта отличаются с полученными условиями"
+
+    @allure.step("Получить обновленный контракт")
+    def get_updated_contract(self):
+        response = self.base_url.get(CONTRACTS.GET_CALCULATE.format(self.contract_id), verify=False,
+                                     headers={'Authorization': f'Bearer {self.token}'})
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
+        with allure.step("Проверить отправленный на обновление контракт с полученным"):
+            with allure.step("Проверить данные ТС"):
+                for item in response.json()["data"]["vehicle"]:
+                    assert data.body_with_update_contract["vehicle"][item] == response.json()["data"]["vehicle"][item],\
+                        "Данные ТС отправленные при обновлении контракта отличаются с полученными данными"
+            with allure.step("Проверить условия страхования"):
+                for item in response.json()["data"]["terms"]:
+                    assert data.body_with_update_contract["terms"][item] == response.json()["data"]["terms"][item], \
+                        f"Условия отправленные при обновлении контракта отличаются с полученными условиями"

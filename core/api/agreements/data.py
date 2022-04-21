@@ -26,7 +26,7 @@ schema_issue_agreement = {
     "required": ["status", "errors"],
     "properties": {
         "status": {"type": "string"},
-        "errors": {"type": "array","items": {}}
+        "errors": {"type": "array", "items": {}}
     }
 }
 
@@ -36,6 +36,45 @@ schema_get_status = {
     "required": ["status", "errors"],
     "properties": {
         "status": {"type": "string"},
-        "errors": {"type": "array","items": {}}
+        "errors": {"type": "array", "items": {}}
+    }
+}
+
+schema_get_agreement = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["status", "premium", "serial", "number", "agreement_date", "terms", "valid_to",
+                 "actions", "info", "errors"],
+    "properties": {
+        "status": {"type": "string"},
+        "premium": {"type": "integer"},
+        "serial": {"type": "null"},
+        "number": {"type": "string"},
+        "agreement_date": {"type": "string"},
+        "terms": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": ["kasko"],
+            "properties": {
+                "kasko": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["bank", "end_date", "franchise", "start_date", "purchase_date",
+                                 "start_exploitation_date"],
+                    "properties": {
+                        "bank": {"type": "string"},
+                        "end_date": {"type": "string"},
+                        "franchise": {"type": "string"},
+                        "start_date": {"type": "string"},
+                        "purchase_date": {"type": "string"},
+                        "start_exploitation_date": {"type": "string"}
+                    }
+                }
+            }
+        },
+        "valid_to": {"type": "string"},
+        "actions": {"type": "array", "items": {}},
+        "info": {"type": "array", "items": {}},
+        "errors": {"type": "array", "items": {}}
     }
 }

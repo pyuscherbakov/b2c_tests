@@ -1,3 +1,4 @@
+from hamcrest import *
 from core.api.authorization.data import schema
 from core.utils.api_client import test_api_url
 from jsonschema import validate
@@ -17,9 +18,9 @@ class TestAuth:
         user = settings.default_user
         response = test_api_url.post(AUTH, verify=False, json={"email": user[0], "password": user[1]})
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Токен получен"):
-            assert response.json()["data"]["token"] is not None
+            assert_that(response.json()["data"]["token"], is_not(None))
         with allure.step("Проверить схему ответа"):
             validate(response.json(), schema)
 
