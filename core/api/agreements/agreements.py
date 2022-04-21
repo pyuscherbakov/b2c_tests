@@ -1,12 +1,15 @@
 import time
+from hamcrest import *
 from core.utils.api_client import ApiClient
 from core.api.endpoints import AGREEMENTS
-from core.api.agreements.data import body_create_agreement
+import core.api.contracts.data as data_contract
+from core.api.agreements import data
 from core.api.authorization import get_token
 import settings
 import allure
 from jsonschema import validate
-from core.api.agreements import data
+from datetime import date
+# TODO: реализовать ассерты через humcrest
 
 
 class Agreement:
@@ -21,11 +24,11 @@ class Agreement:
 
     @allure.step("Создать договор")
     def create_agreement(self):
-        body_create_agreement["contract_id"] = self.contract_id
-        body_create_agreement["product_id"] = self.product
+        data.body_create_agreement["contract_id"] = self.contract_id
+        data.body_create_agreement["product_id"] = self.product
         response = self.base_url.post(AGREEMENTS.CREATE, verify=False,
                                       headers={'Authorization': f'Bearer {self.token}'},
-                                      json=body_create_agreement)
+                                      json=data.body_create_agreement)
         with allure.step("Проверить статус код ответа"):
             assert response.status_code in [200, 202]
         response = response.json()
@@ -51,7 +54,7 @@ class Agreement:
     def issue_agreement(self):
         response = self.base_url.post(AGREEMENTS.ISSUE.format(self.agreement_id), verify=False,
                                       headers={'Authorization': f'Bearer {self.token}'},
-                                      json=body_create_agreement)
+                                      json=data.body_create_agreement)
         with allure.step("Проверить статус код ответа"):
             assert response.status_code in [200, 202], f"Ожидался статус код 200 или 202, " \
                                                        f"получен {response.status_code}"
@@ -92,7 +95,7 @@ class Agreement:
     def get_payment_url(self):
         response = self.base_url.post(AGREEMENTS.ISSUE.format(self.agreement_id), verify=False,
                                       headers={'Authorization': f'Bearer {self.token}'},
-                                      json=body_create_agreement)
+                                      json=data.body_create_agreement)
         assert response.json().get("payment_url"), "Ссылка на оплату не получена"
         with allure.step("Проверить статус код ответа"):
             assert response.status_code in [200, 202], f"Ожидался статус код 200 или 202, " \
@@ -105,3 +108,21 @@ class Agreement:
                   f"Ссылка действительна до: {response.json()['payment_url_lifetime']}"
             allure.attach(res, 'Ссылка на оплату', allure.attachment_type.TEXT)
 
+    @allure.step("Получить договор")
+    def get_agreement(self, agreement_status):
+        response = self.base_url.get(AGREEMENTS.GET.format(self.agreement_id), verify=False,
+                                     headers={'Authorization': f'Bearer {self.token}'})
+        with allure.step("Проверить статус код ответа"):
+            assert response.status_code == 200
+        with allure.step("Проверить дату оформления договора"):
+            assert_that(response.json()["agreement_date"], equal_to(str(date.today())))
+        with allure.step("Условия полученного договора совпадают с условями в отправленном контракте при его создании"):
+            for item in response.json()["terms"]["kasko"]:
+                assert_that(data_contract.body_create_contract["terms"]["kasko"][item],
+                            equal_to(response.json()["terms"]["kasko"][item]))
+        with allure.step("Договор не имеет сообщений об ошибке"):
+            assert_that(response.json()["errors"], is_(empty()))
+        with allure.step("Проверить статус договора"):
+            assert_that(response.json()["status"], equal_to(agreement_status))
+        with allure.step("Проверить схему ответа"):
+            validate(response.json(), data.schema_get_agreement)

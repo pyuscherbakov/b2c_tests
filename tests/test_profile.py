@@ -4,6 +4,7 @@ from core.api.endpoints import PROFILE
 from core.api.profile.data import schema
 from jsonschema import validate
 import allure
+# TODO: реализовать ассерты через humcrest
 
 
 class TestProfile:
