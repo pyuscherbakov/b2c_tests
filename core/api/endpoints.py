@@ -16,3 +16,4 @@ class AGREEMENTS:
     GET = "/api/v1/agreements/{}"
     ISSUE = "/api/v1/agreements/{}/issue"
     TASK = "/api/v1/agreements/{}/task"
+    DOCUMENTS = "/api/v1/agreements/{}/documents"

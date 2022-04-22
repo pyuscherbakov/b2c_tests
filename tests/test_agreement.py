@@ -40,9 +40,16 @@ class TestContracts:
     # def test_update_agreement(self):
     #     pass
     #
-    # @allure.feature('Договор')
-    # @allure.story('Получить документы по договору')
-    # def test_get_documents_in_agreement(self):
-    #     pass
-
+    @allure.feature('Договор')
+    @allure.story('Получить документы по договору')
+    def test_get_documents_in_agreement(self, product, franchise):
+        contract = Contract(franchise)
+        contract.create_contract()
+        contract.create_calculation(product)
+        contract.get_calculation()
+        agreement = Agreement(contract.get_contract_id(), product)
+        agreement.create_agreement()
+        agreement.issue_agreement()
+        agreement.agreement_get_status()
+        agreement.get_documents()
 

@@ -126,3 +126,16 @@ class Agreement:
                 data.schema_get_agreement["required"].append("payment_url")
                 data.schema_get_agreement["properties"]["payment_url"] = {"type": "string"}
             validate(response.json(), data.schema_get_agreement)
+
+    @allure.step("Получить документы по договору")
+    def get_documents(self):
+        response = self.base_url.get(AGREEMENTS.DOCUMENTS.format(self.agreement_id), verify=False,
+                                     headers={'Authorization': f'Bearer {self.token}'})
+        with allure.step("Проверить статус код ответа"):
+            assert_that(response.status_code, equal_to(200))
+        with allure.step("Проверить полученные документы"):
+            for document in response.json():
+                with allure.step(f"Статус документа: {document['name']}– Success"):
+                    assert_that(document["success"], equal_to(True))
+        with allure.step("Проверить схему ответа"):
+            validate(response.json(), data.schema_documents)
