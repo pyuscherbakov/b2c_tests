@@ -23,6 +23,6 @@ Bash скрипт для запуска:
 git clone https://github.com/pyuscherbakov/b2c_tests 
 cd b2c_tests                                         
 pip install -r requirements.txt                      #Установить требуемые плагины python
-pytest --alluredir=./allure-results                  #Запустить все тесты и сформировать Allure отчет
+pytest -n=auto --alluredir=./allure-results          #Запустить все тесты и сформировать Allure отчет
 allure serve allure-results                          #Открыть Allure отчет
 ```
