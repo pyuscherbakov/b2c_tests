@@ -9,9 +9,6 @@ import settings
 import allure
 
 
-# TODO: реализовать ассерты через humcrest
-
-
 class Contract:
     base_url = ApiClient(settings.base_url)
 
