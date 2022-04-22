@@ -1,4 +1,5 @@
 import time
+from hamcrest import *
 from core.api.endpoints import CONTRACTS
 from core.utils.api_client import ApiClient
 from core.api.contracts import data
@@ -6,6 +7,8 @@ from core.api.authorization import get_token
 from jsonschema import validate
 import settings
 import allure
+
+
 # TODO: реализовать ассерты через humcrest
 
 
@@ -24,12 +27,12 @@ class Contract:
                                       headers={'Authorization': f'Bearer {self.token}'},
                                       json=data.body_create_contract)
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_create_contract)
         response = response.json()
         with allure.step("Полученное в ответе поле ID не пустое"):
-            assert response["data"]["id"] is not None
+            assert_that(response["data"]["id"], is_not(None))
         self.contract_id = response["data"]["id"]
         allure.attach(self.contract_id, 'Contract id', allure.attachment_type.TEXT)
 
@@ -43,7 +46,7 @@ class Contract:
                                       headers={'Authorization': f'Bearer {self.token}'},
                                       json=data.body_create_calculation)
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 202, f"Ожидался статус код 202, получен {response.status_code}"
+            assert_that(response.status_code, is_in([200, 202]))
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_create_calculation)
 
@@ -53,15 +56,14 @@ class Contract:
                                      headers={'Authorization': f'Bearer {self.token}'})
         status = response.json()["products"][0]["status"]
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить статус расчета"):
             if status == "Executing" or status == "InQueue":
                 time.sleep(5)
                 with allure.step(f"Статус расчета {status}. Проверить расчет еще раз."):
                     self.get_calculation()
             else:
-                assert status == "Success", f"Ожидался статус Success, получен {status} " \
-                                            f"с ошибкой {response.json()['products'][0]['errors']}"
+                assert_that(status, equal_to("Success"))
                 with allure.step("Проверить схему ответа"):
                     validate(response.json(), data.schema_get_calculation)
 
@@ -70,16 +72,16 @@ class Contract:
         response = self.base_url.get(CONTRACTS.GET_CALCULATE.format(self.contract_id), verify=False,
                                      headers={'Authorization': f'Bearer {self.token}'})
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить отправленный на создание контракт с полученным"):
             with allure.step("Проверить данные ТС"):
                 for item in response.json()["data"]["vehicle"]:
-                    assert data.body_create_contract["vehicle"][item] == response.json()["data"]["vehicle"][item], \
-                        "Данные ТС отправленные при создании контракта отличаются с полученными данными"
+                    assert_that(data.body_create_contract["vehicle"][item],
+                                equal_to(response.json()["data"]["vehicle"][item]))
             with allure.step("Проверить условия страхования"):
                 for item in response.json()["data"]["terms"]:
-                    assert data.body_create_contract["terms"][item] == response.json()["data"]["terms"][item], \
-                        f"Условия отправленные при создании контракта отличаются с полученными условиями"
+                    assert_that(data.body_create_contract["terms"][item],
+                                equal_to(response.json()["data"]["terms"][item]))
 
     @allure.step("Обновить контракт")
     def update_contract(self):
@@ -87,29 +89,29 @@ class Contract:
                                      headers={'Authorization': f'Bearer {self.token}'},
                                      json=data.body_with_update_contract)
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить отправленный на обновление контракт с полученным"):
             with allure.step("Проверить данные ТС"):
                 for item in response.json()["data"]["vehicle"]:
-                    assert data.body_with_update_contract["vehicle"][item] == response.json()["data"]["vehicle"][item],\
-                        "Данные ТС отправленные при обновлении контракта отличаются с полученными данными"
+                    assert_that(data.body_with_update_contract["vehicle"][item],
+                                equal_to(response.json()["data"]["vehicle"][item]))
             with allure.step("Проверить условия страхования"):
                 for item in response.json()["data"]["terms"]:
-                    assert data.body_with_update_contract["terms"][item] == response.json()["data"]["terms"][item], \
-                        f"Условия отправленные при обновлении контракта отличаются с полученными условиями"
+                    assert_that(data.body_with_update_contract["terms"][item],
+                                equal_to(response.json()["data"]["terms"][item]))
 
     @allure.step("Получить обновленный контракт")
     def get_updated_contract(self):
         response = self.base_url.get(CONTRACTS.GET_CALCULATE.format(self.contract_id), verify=False,
                                      headers={'Authorization': f'Bearer {self.token}'})
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200, f"Ожидался статус код 200, получен {response.status_code}"
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить отправленный на обновление контракт с полученным"):
             with allure.step("Проверить данные ТС"):
                 for item in response.json()["data"]["vehicle"]:
-                    assert data.body_with_update_contract["vehicle"][item] == response.json()["data"]["vehicle"][item],\
-                        "Данные ТС отправленные при обновлении контракта отличаются с полученными данными"
+                    assert_that(data.body_with_update_contract["vehicle"][item],
+                                equal_to(response.json()["data"]["vehicle"][item]))
             with allure.step("Проверить условия страхования"):
                 for item in response.json()["data"]["terms"]:
-                    assert data.body_with_update_contract["terms"][item] == response.json()["data"]["terms"][item], \
-                        f"Условия отправленные при обновлении контракта отличаются с полученными условиями"
+                    assert_that(data.body_with_update_contract["terms"][item],
+                                equal_to(response.json()["data"]["terms"][item]))
