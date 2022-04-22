@@ -3,6 +3,8 @@ import allure
 import pytest
 
 
+# TODO: прописать проверки остальных методов
+
 @pytest.mark.parametrize("franchise", ["Нет", "Безусловная 15 тыс."])
 class TestContracts:
     @allure.feature('Контракт')
@@ -19,4 +21,3 @@ class TestContracts:
         contract.create_contract()
         contract.update_contract()
         contract.get_updated_contract()
-

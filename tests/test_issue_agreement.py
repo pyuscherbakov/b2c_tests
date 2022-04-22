@@ -4,13 +4,17 @@ from core.api.agreements.agreements import Agreement
 import allure
 
 
-# TODO: Организовать получение токена в фикстуре
-
-class TestsE2E:
-    @pytest.mark.parametrize("product", ["ingos_kasko", "alfastrah_kasko"])
-    @pytest.mark.parametrize("franchise", ["Нет", "Безусловная 15 тыс."])
-    @allure.feature('Договор')
-    @allure.story('Оформить договор')
+@allure.feature('Договор')
+@allure.story('Оформить договор')
+class TestsIssueAgreement:
+    @pytest.mark.parametrize("product", [
+        "ingos_kasko",
+        "alfastrah_kasko",
+    ])
+    @pytest.mark.parametrize("franchise", [
+        "Нет",
+        "Безусловная 15 тыс."
+    ])
     def test_issue_agreement(self, product, franchise):
         contract = Contract(franchise)
         contract.create_contract()

@@ -2,6 +2,7 @@ from core.api.agreements.agreements import Agreement
 from core.api.contracts.contracts import Contract
 import allure
 import pytest
+# TODO: прописать проверки остальных методов
 
 
 @pytest.mark.parametrize("product", ["ingos_kasko", "alfastrah_kasko"])

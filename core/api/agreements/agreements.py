@@ -4,20 +4,17 @@ from core.utils.api_client import ApiClient
 from core.api.endpoints import AGREEMENTS
 import core.api.contracts.data as data_contract
 from core.api.agreements import data
-from core.api.authorization import get_token
-import settings
 import allure
 from jsonschema import validate
 from datetime import date
 
 
 class Agreement:
-    base_url = ApiClient(settings.base_url)
+    api = ApiClient()
 
     def __init__(self, contract_id, product):
         self.contract_id = contract_id
         self.product = product
-        self.token = get_token()
         self.agreement_id = None
         self.payment_link = None
 
@@ -25,9 +22,8 @@ class Agreement:
     def create_agreement(self):
         data.body_create_agreement["contract_id"] = self.contract_id
         data.body_create_agreement["product_id"] = self.product
-        response = self.base_url.post(AGREEMENTS.CREATE, verify=False,
-                                      headers={'Authorization': f'Bearer {self.token}'},
-                                      json=data.body_create_agreement)
+        response = self.api.post(AGREEMENTS.CREATE,
+                                 json=data.body_create_agreement)
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, is_in([200, 202]))
         response = response.json()
@@ -39,7 +35,6 @@ class Agreement:
                 with allure.step(f"Договор не имеет статус 'error'"):
                     assert_that(response["status"], is_not(equal_to("error")))
                 time.sleep(10)
-                # TODO: убрать шаги повторного вызова метода создания договора из отчетов
                 self.create_agreement()
         else:
             self.agreement_id = response["id"]
@@ -51,9 +46,8 @@ class Agreement:
 
     @allure.step("Оформить договор")
     def issue_agreement(self):
-        response = self.base_url.post(AGREEMENTS.ISSUE.format(self.agreement_id), verify=False,
-                                      headers={'Authorization': f'Bearer {self.token}'},
-                                      json=data.body_create_agreement)
+        response = self.api.post(AGREEMENTS.ISSUE.format(self.agreement_id),
+                                 json=data.body_create_agreement)
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, is_in([200, 202]))
         with allure.step(f"Договор встал в очередь на оформление"):
@@ -63,15 +57,14 @@ class Agreement:
 
     @allure.step("Проверить статус оформления договора")
     def agreement_get_status(self):
-        response = self.base_url.get(AGREEMENTS.TASK.format(self.agreement_id), verify=False,
-                                     headers={'Authorization': f'Bearer {self.token}'})
+        response = self.api.get(AGREEMENTS.TASK.format(self.agreement_id))
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, equal_to(200))
         with allure.step("Статус выполнения операции получен"):
             assert_that(response.json().get("status"))
         status = response.json()["status"]
         if status == "Executing" or status == "InQueue":
-            time.sleep(11)
+            time.sleep(10)
             with allure.step(f"Повторно проверить статус договора. Текущий статус договора {status}."):
                 self.agreement_get_status()
         else:
@@ -91,9 +84,8 @@ class Agreement:
 
     @allure.step("Получить ссылку на оплату")
     def get_payment_url(self):
-        response = self.base_url.post(AGREEMENTS.ISSUE.format(self.agreement_id), verify=False,
-                                      headers={'Authorization': f'Bearer {self.token}'},
-                                      json=data.body_create_agreement)
+        response = self.api.post(AGREEMENTS.ISSUE.format(self.agreement_id),
+                                 json=data.body_create_agreement)
         assert_that(response.json().get("payment_url"))
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, is_in([200, 202]))
@@ -107,8 +99,7 @@ class Agreement:
 
     @allure.step("Получить договор")
     def get_agreement(self, agreement_status):
-        response = self.base_url.get(AGREEMENTS.GET.format(self.agreement_id), verify=False,
-                                     headers={'Authorization': f'Bearer {self.token}'})
+        response = self.api.get(AGREEMENTS.GET.format(self.agreement_id))
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить дату оформления договора"):
@@ -129,8 +120,7 @@ class Agreement:
 
     @allure.step("Получить документы по договору")
     def get_documents(self):
-        response = self.base_url.get(AGREEMENTS.DOCUMENTS.format(self.agreement_id), verify=False,
-                                     headers={'Authorization': f'Bearer {self.token}'})
+        response = self.api.get(AGREEMENTS.DOCUMENTS.format(self.agreement_id))
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить полученные документы"):

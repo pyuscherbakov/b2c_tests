@@ -1,17 +1,22 @@
 from core.api.endpoints import AUTH
-from core.utils.api_client import *
 import settings
 import allure
+import requests
 
 
 class Token:
-    base_url = ApiClient(settings.base_url)
+    token = None
 
     @staticmethod
     @allure.step("Получить токен")
-    def get_token():
+    def _get_token():
         url = settings.base_url + AUTH
         user = settings.default_user
         r = requests.post(url, verify=False, json={"email": user[0], "password": user[1]})
         return r.json()["data"]["token"]
 
+    @staticmethod
+    def get_token():
+        if not Token.token:
+            Token.token = Token._get_token()
+        return Token.token
