@@ -1,4 +1,3 @@
-import pytest
 import requests
 import allure
 import json as m_json
