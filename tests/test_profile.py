@@ -3,8 +3,8 @@ from core.utils.api_client import test_api_url
 from core.api.endpoints import PROFILE
 from core.api.profile.data import schema
 from jsonschema import validate
+from hamcrest import *
 import allure
-# TODO: реализовать ассерты через humcrest
 
 
 class TestProfile:
@@ -15,7 +15,7 @@ class TestProfile:
         token = get_token()
         response = test_api_url.get(PROFILE, verify=False, headers={'Authorization': f'Bearer {token}'})
         with allure.step("Проверить статус код ответа"):
-            assert response.status_code == 200
+            assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить схему ответа"):
             validate(response.json(), schema)
 
