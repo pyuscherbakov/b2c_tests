@@ -100,7 +100,8 @@ class TestAgreement:
         agreement.get_payment_url()
         agreement.attach_agreement_data()
 
-    @pytest.mark.skip(reason="Тест не полностью реализован")
+    # TODO: Проверить
+    @pytest.mark.skip(reason="Тест не проверен, так как альфа упала")
     @allure.feature('Договор')
     @allure.story('Обновить договор')
     @allure.title('Обновить договор')
@@ -113,6 +114,8 @@ class TestAgreement:
         agreement.create_agreement()
         contract.update_contract("purchase_date")
         contract.get_updated_contract()
+        contract.create_calculation(product)
+        contract.get_calculation()
         agreement.update_agreement()
         agreement.agreement_get_status()
         agreement.get_updated_agreement()
