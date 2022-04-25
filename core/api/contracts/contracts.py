@@ -5,6 +5,7 @@ from core.utils.api_client import ApiClient
 from core.api.contracts import data
 from jsonschema import validate
 import allure
+import datetime
 
 
 class Contract:
@@ -72,7 +73,19 @@ class Contract:
                                 equal_to(response.json()["data"]["terms"][item]))
 
     @allure.step("Обновить контракт")
-    def update_contract(self):
+    def update_contract(self, updated_parameter):
+        """
+        :param updated_parameter: параметр, который требуется изменить в обновляемом договоре
+        Доступные параметры:
+        drivers
+        purchase_date
+        """
+        if updated_parameter == "purchase_date":
+            data.body_with_update_contract["terms"]["kasko"]["purchase_date"] = \
+                str(datetime.date.today() - datetime.timedelta(days=5))
+        elif updated_parameter == "drivers":
+            data.body_with_update_contract["drivers"][0]["last_name"] = "Климов"
+
         response = self.api.put(CONTRACTS.UPDATE.format(self.contract_id), json=data.body_with_update_contract)
 
         with allure.step("Проверить статус код ответа"):

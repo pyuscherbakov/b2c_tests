@@ -145,11 +145,11 @@ body_create_contract = {
 body_with_update_contract = {
     "vehicle": {
         "category": "B",
-        "mark": "LADA",
-        "model": "GRANTA",
+        "mark": "Hyundai",
+        "model": "Solaris",
         "year": 2022,
-        "cost": 1100000.01,
-        "power": 111,
+        "cost": 1100000.55,
+        "power": 100,
         "mileage": 10,
         "engine_volume": 123,
         "engine_type": "petrol",
@@ -276,8 +276,8 @@ body_with_update_contract = {
         "kasko": {
             "start_date": start_date,
             "end_date": end_date,
-            "start_exploitation_date": start_date,
-            "purchase_date": start_date,
+            "start_exploitation_date": start_exploitation_date,
+            "purchase_date": purchase_date,
             "franchise": "Нет",
             "bank": ""
         }

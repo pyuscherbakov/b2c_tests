@@ -83,11 +83,19 @@ schema_documents = {
     "type": "array",
     "additionalItems": False,
     "properties": {
-        "success": { "type": "boolean" },
-        "messages": { "type": "string" },
-        "name": { "type": "string" },
-        "ext": { "type": "string" },
-        "type": { "type": "string" },
-        "content": { "type": "string"}
+        "success": {"type": "boolean"},
+        "messages": {"type": "string"},
+        "name": {"type": "string"},
+        "ext": {"type": "string"},
+        "type": {"type": "string"},
+        "content": {"type": "string"}
     }
+}
+
+schema_update_agreement = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["status", "errors"],
+    "properties": {"status": {"type": "string"},
+                   "errors": {"type": "array", "items": {}}}
 }

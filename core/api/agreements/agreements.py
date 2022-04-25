@@ -7,6 +7,7 @@ from core.api.agreements import data
 import allure
 from jsonschema import validate
 from datetime import date
+import datetime
 # TODO: Установить счетчик запросов
 
 
@@ -39,7 +40,6 @@ class Agreement:
                 self.create_agreement()
         else:
             self.agreement_id = response["id"]
-            self.attach_agreement_data()
             with allure.step(f"Ответ содержит в себе ID договора"):
                 assert_that(response["id"], is_not(None))
             with allure.step(f"Проверить схему успешного ответа"):
@@ -77,7 +77,7 @@ class Agreement:
                     self.agreement_get_status()
             else:
                 with allure.step(f"Договор не содержит ошибок"):
-                    assert_that(status, is_not(equal_to("Error")))
+                    assert_that(status, is_not(equal_to("Error")), f"Получена ошибка: {response.json()['errors']}")
                 with allure.step(f"Договор успешно оформлен"):
                     assert_that(status, equal_to("Success"))
                 with allure.step(f"Проверить схему ответа"):
@@ -119,6 +119,20 @@ class Agreement:
                 data.schema_get_agreement["properties"]["payment_url"] = {"type": "string"}
             validate(response.json(), data.schema_get_agreement)
 
+    @allure.step("Получить обновленный договор")
+    def get_updated_agreement(self):
+        response = self.api.get(AGREEMENTS.GET.format(self.agreement_id))
+        data_contract.body_with_update_contract["terms"]["kasko"]["purchase_date"] = \
+            str(datetime.date.today() - datetime.timedelta(days=5))
+        with allure.step("Проверить статус код ответа"):
+            assert_that(response.status_code, equal_to(200))
+        with allure.step("Условия полученного договора совпадают с условями в отправленном контракте при его создании"):
+            for item in response.json()["terms"]["kasko"]:
+                assert_that(data_contract.body_with_update_contract["terms"]["kasko"][item],
+                            equal_to(response.json()["terms"]["kasko"][item]), f'получен {response.json()["terms"]["kasko"][item]}')
+        with allure.step("Договор не имеет сообщений об ошибке"):
+            assert_that(response.json()["errors"], is_(empty()))
+
     @allure.step("Получить документы по договору")
     def get_documents(self):
         response = self.api.get(AGREEMENTS.DOCUMENTS.format(self.agreement_id))
@@ -130,6 +144,14 @@ class Agreement:
                     assert_that(document["success"], equal_to(True))
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_documents)
+
+    @allure.step("Обновить договор")
+    def update_agreement(self):
+        response = self.api.put(AGREEMENTS.GET.format(self.agreement_id))
+        with allure.step("Проверить статус код ответа"):
+            assert_that(response.status_code, equal_to(200))
+        with allure.step("Проверить схему ответа"):
+            validate(response.json(), data.schema_update_agreement)
 
     def attach_agreement_data(self):
         res = f"Контракт: {self.contract_id}\n" \
