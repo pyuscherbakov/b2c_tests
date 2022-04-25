@@ -7,6 +7,7 @@ from core.api.agreements import data
 import allure
 from jsonschema import validate
 from datetime import date
+# TODO: Установить счетчик запросов
 
 
 class Agreement:
@@ -38,7 +39,7 @@ class Agreement:
                 self.create_agreement()
         else:
             self.agreement_id = response["id"]
-            allure.attach(self.agreement_id, 'Agreement id', allure.attachment_type.TEXT)
+            self.attach_agreement_data()
             with allure.step(f"Ответ содержит в себе ID договора"):
                 assert_that(response["id"], is_not(None))
             with allure.step(f"Проверить схему успешного ответа"):
@@ -129,3 +130,9 @@ class Agreement:
                     assert_that(document["success"], equal_to(True))
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_documents)
+
+    def attach_agreement_data(self):
+        res = f"Контракт: {self.contract_id}\n" \
+              f"Договор: {self.agreement_id}\n" \
+              f"Ссылка на оплату: {self.payment_link}"
+        allure.attach(res, 'Данные', allure.attachment_type.TEXT)
