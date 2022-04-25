@@ -8,3 +8,6 @@ number = str(random.randint(100000, 999999))
 
 start_date = str(datetime.date.today() + datetime.timedelta(days=1))
 end_date = str(datetime.date.today() + datetime.timedelta(days=365))
+
+start_exploitation_date = str(datetime.date.today())
+purchase_date = str(datetime.date.today() - datetime.timedelta(days=1))
