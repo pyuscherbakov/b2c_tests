@@ -110,7 +110,7 @@ class Agreement:
                 assert_that(data_contract.body_create_contract["terms"]["kasko"][item],
                             equal_to(response.json()["terms"]["kasko"][item]))
         with allure.step("Договор не имеет сообщений об ошибке"):
-            assert_that(response.json()["errors"], is_(empty()))
+            assert_that(response.json()["errors"], is_(empty()), f'Получена ошибка: {response.json()["errors"]}')
         with allure.step("Проверить статус договора"):
             assert_that(response.json()["status"], equal_to(agreement_status))
         with allure.step("Проверить схему ответа"):
