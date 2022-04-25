@@ -3,26 +3,25 @@ import allure
 import pytest
 
 
-
 @pytest.mark.parametrize("product", ["ingos_kasko", "alfastrah_kasko"])
 @pytest.mark.parametrize("franchise", ["Нет", "Безусловная 15 тыс."])
 class TestContracts:
     @allure.feature('Контракт')
     @allure.story('Создать контракт')
-    def test_get_calculation(self, franchise):
+    def test_create_contract(self, franchise):
         contract = Contract(franchise)
         contract.create_contract()
 
     @allure.feature('Контракт')
     @allure.story('Создать расчет')
-    def test_get_calculation(self, franchise, product):
+    def test_create_calculation(self, franchise, product):
         contract = Contract(franchise)
         contract.create_contract()
         contract.create_calculation(product)
 
     @allure.feature('Контракт')
     @allure.story('Получить контракт')
-    def test_get_calculation(self, franchise):
+    def test_get_contract(self, franchise):
         contract = Contract(franchise)
         contract.create_contract()
         contract.get_contract()
