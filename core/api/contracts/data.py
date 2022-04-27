@@ -3,10 +3,10 @@ from core.utils.data_generator import *
 body_create_contract = {
     "vehicle": {
         "category": "B",
-        "mark": "Hyundai",
-        "model": "Solaris",
+        "mark": "LADA",
+        "model": "GRANTA",
         "year": 2022,
-        "cost": 1100000.55,
+        "cost": 1100000.01,
         "power": 100,
         "mileage": 10,
         "engine_volume": 123,
@@ -145,10 +145,10 @@ body_create_contract = {
 body_with_update_contract = {
     "vehicle": {
         "category": "B",
-        "mark": "Hyundai",
-        "model": "Solaris",
+        "mark": "LADA",
+        "model": "GRANTA",
         "year": 2022,
-        "cost": 1100000.55,
+        "cost": 1100000.01,
         "power": 100,
         "mileage": 10,
         "engine_volume": 123,
