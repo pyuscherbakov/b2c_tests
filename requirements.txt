@@ -3,9 +3,6 @@ allure-python-commons==2.9.45
 jsonschema==4.4.0
 multidict==6.0.2
 pytest==7.1.1
-pytest-forked==1.4.0
-pytest-repeat==0.9.1
-pytest-subtests==0.7.0
 pytest-xdist==2.5.0
 PyHamcrest==2.0.3
-
+requests~=2.27.1
