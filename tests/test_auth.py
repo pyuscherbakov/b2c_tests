@@ -6,8 +6,6 @@ import settings
 import allure
 import requests
 
-# TODO: Написать проверку на авторизацию с невалидным аккаунтом
-
 
 class TestAuth:
 
