@@ -3,6 +3,7 @@ import allure
 import json as m_json
 from core.api.authorization import get_token
 from settings import base_url
+from loguru import logger
 
 
 class ApiClient:
@@ -21,6 +22,10 @@ class ApiClient:
                 headers=self._get_headers(headers),
                 verify=False,
             )
+            logger.info(f"Отправить POST запрос.\n"
+                        f"URL: {url}\n"
+                        f"Тело запроса: {json}\n"
+                        f"Тело ответа: {r.json()}\n")
             allure.attach(m_json.dumps(json, indent=4), 'Тело запроса', allure.attachment_type.JSON)
             allure.attach(m_json.dumps(r.json(), indent=4), 'Тело ответа', allure.attachment_type.JSON)
             return r
@@ -34,6 +39,9 @@ class ApiClient:
                 headers=self._get_headers(headers),
                 verify=False,
             )
+            logger.info(f"Отправить GET запрос.\n"
+                        f"URL: {url}\n"
+                        f"Тело ответа: {r.json()}\n")
             allure.attach(m_json.dumps(r.json(), indent=4), 'Тело ответа', allure.attachment_type.JSON)
             return r
 
@@ -48,6 +56,10 @@ class ApiClient:
                 headers=self._get_headers(headers),
                 verify=False,
             )
+            logger.info(f"Отправить PUT запрос.\n"
+                        f"URL: {url}\n"
+                        f"Тело запроса: {json}\n"
+                        f"Тело ответа: {r.json()}\n")
             allure.attach(m_json.dumps(json, indent=4), 'Тело запроса', allure.attachment_type.JSON)
             allure.attach(m_json.dumps(r.json(), indent=4), 'Тело ответа', allure.attachment_type.JSON)
             return r

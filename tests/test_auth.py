@@ -5,6 +5,7 @@ from core.api.endpoints import AUTH
 import settings
 import allure
 import requests
+from loguru import logger
 
 
 class TestAuth:
@@ -15,6 +16,9 @@ class TestAuth:
         url = settings.base_url + AUTH
         user = settings.default_user
         r = requests.post(url, verify=False, json={"email": user[0], "password": user[1]})
+        logger.info(f"Отправить POST запрос на авторизацию.\n"
+                    f"Логин: {user[0]}; Пароль: {user[1]}\n"
+                    f"Ответ: {r.json()}\n")
         with allure.step("Проверить статус код ответа"):
             assert_that(r.status_code, equal_to(200))
         with allure.step("Токен получен"):
@@ -29,6 +33,9 @@ class TestAuth:
         url = settings.base_url + AUTH
         user = ("invalid@mail.ru", "wrong_password")
         r = requests.post(url, verify=False, json={"email": user[0], "password": user[1]})
+        logger.info(f"Отправить POST запрос на авторизацию.\n"
+                    f"Логин: {user[0]}; Пароль: {user[1]}\n"
+                    f"Ответ: {r.json()}\n")
         with allure.step("Проверить статус код ответа"):
             assert_that(r.status_code, equal_to(400))
         with allure.step("Токен не получен"):
