@@ -2,7 +2,7 @@ import requests
 import allure
 import json as m_json
 from core.api.authorization import get_token
-from settings import base_url
+from tests.b2c.settings import base_url
 from loguru import logger
 
 

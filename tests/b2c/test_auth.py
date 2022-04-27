@@ -2,7 +2,7 @@ from hamcrest import *
 from core.api.authorization.data import *
 from jsonschema import validate
 from core.api.endpoints import AUTH
-import settings
+from tests.b2c import settings
 import allure
 import requests
 from loguru import logger

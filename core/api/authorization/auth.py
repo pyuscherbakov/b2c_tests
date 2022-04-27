@@ -1,5 +1,5 @@
 from core.api.endpoints import AUTH
-import settings
+from tests.b2c import settings
 import allure
 import requests
 
