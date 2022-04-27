@@ -8,7 +8,6 @@ import requests
 
 
 class TestAuth:
-
     @allure.feature('Авторизация')
     @allure.story('Получить токен')
     @allure.title('Получить токен')
