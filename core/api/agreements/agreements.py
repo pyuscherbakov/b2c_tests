@@ -1,4 +1,6 @@
 import time
+
+import pytest
 from hamcrest import *
 from core.utils.api_client import ApiClient
 from core.api.endpoints import AGREEMENTS
@@ -19,9 +21,12 @@ class Agreement:
         self.product = product
         self.agreement_id = None
         self.payment_link = None
+        self.cnt_create_contract = 0
+        self.cnt_get_status = 0
 
     @allure.step("Создать договор")
     def create_agreement(self):
+        max_returns = 10
         data.body_create_agreement["contract_id"] = self.contract_id
         data.body_create_agreement["product_id"] = self.product
         response = self.api.post(AGREEMENTS.CREATE,
@@ -30,20 +35,25 @@ class Agreement:
             assert_that(response.status_code, is_in([200, 202]))
         response = response.json()
         time.sleep(10)
-        if response.get("status"):
-            with allure.step(f"Договор не создан. Отправить повторный запрос."):
-                with allure.step(f"Проверить схему ответа при статусе {response['status']}"):
-                    validate(response, data.schema_with_not_success)
-                with allure.step(f"Договор не имеет статус 'error'"):
-                    assert_that(response["status"], is_not(equal_to("error")))
-                time.sleep(10)
-                self.create_agreement()
+        if self.cnt_create_contract <= max_returns:
+            self.cnt_create_contract += 1
+            print(f"Попытка создать договор: {self.cnt_create_contract}")
+            if response.get("status"):
+                with allure.step(f"Договор не создан. Отправить повторный запрос."):
+                    with allure.step(f"Проверить схему ответа при статусе {response['status']}"):
+                        validate(response, data.schema_with_not_success)
+                    with allure.step(f"Договор не имеет статус 'error'"):
+                        assert_that(response["status"], is_not(equal_to("error")))
+                    time.sleep(10)
+                    self.create_agreement()
+            else:
+                self.agreement_id = response["id"]
+                with allure.step(f"Ответ содержит в себе ID договора"):
+                    assert_that(response["id"], is_not(None))
+                with allure.step(f"Проверить схему успешного ответа"):
+                    validate(response, data.schema_with_success)
         else:
-            self.agreement_id = response["id"]
-            with allure.step(f"Ответ содержит в себе ID договора"):
-                assert_that(response["id"], is_not(None))
-            with allure.step(f"Проверить схему успешного ответа"):
-                validate(response, data.schema_with_success)
+            pytest.fail("Выполнено слишком много попыток создать договор")
 
     @allure.step("Оформить договор")
     def issue_agreement(self):
@@ -58,30 +68,36 @@ class Agreement:
 
     @allure.step("Проверить статус оформления договора")
     def agreement_get_status(self):
+        max_returns = 15
         response = self.api.get(AGREEMENTS.TASK.format(self.agreement_id))
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, equal_to(200))
         with allure.step("Статус выполнения операции получен"):
             assert_that(response.json().get("status"))
         status = response.json()["status"]
-        if status == "Executing" or status == "InQueue":
-            time.sleep(10)
-            with allure.step(f"Повторно проверить статус договора. Текущий статус договора {status}."):
-                self.agreement_get_status()
-        else:
-            if self.product == "alfastrah_kasko" and \
-                    response.json()['errors'] == ['Неопознанная ошибка в ответе страховой компании']:
-                with allure.step(f"Повторно отправить запрос на оформление договора."
-                                 f"Обнаружена ошибка {response.json()['errors']}"):
-                    self.issue_agreement()
+        if self.cnt_get_status <= max_returns:
+            self.cnt_get_status += 1
+            print(f"Попытка получить статус договора: {self.cnt_get_status}")
+            if status == "Executing" or status == "InQueue":
+                time.sleep(10)
+                with allure.step(f"Повторно проверить статус договора. Текущий статус договора {status}."):
                     self.agreement_get_status()
             else:
-                with allure.step(f"Договор не содержит ошибок"):
-                    assert_that(status, is_not(equal_to("Error")), f"Получена ошибка: {response.json()['errors']}")
-                with allure.step(f"Договор успешно оформлен"):
-                    assert_that(status, equal_to("Success"))
-                with allure.step(f"Проверить схему ответа"):
-                    validate(response.json(), data.schema_get_status)
+                if self.product == "alfastrah_kasko" and \
+                        response.json()['errors'] == ['Неопознанная ошибка в ответе страховой компании']:
+                    with allure.step(f"Повторно отправить запрос на оформление договора."
+                                     f"Обнаружена ошибка {response.json()['errors']}"):
+                        self.issue_agreement()
+                        self.agreement_get_status()
+                else:
+                    with allure.step(f"Договор не содержит ошибок"):
+                        assert_that(status, is_not(equal_to("Error")), f"Получена ошибка: {response.json()['errors']}")
+                    with allure.step(f"Договор успешно оформлен"):
+                        assert_that(status, equal_to("Success"))
+                    with allure.step(f"Проверить схему ответа"):
+                        validate(response.json(), data.schema_get_status)
+        else:
+            pytest.fail("Выполнено слишком много попыток получить статус оформления договора")
 
     @allure.step("Получить ссылку на оплату")
     def get_payment_url(self):
@@ -97,6 +113,8 @@ class Agreement:
                   f"Ссылка на оплату: {response.json()['payment_url']}\n" \
                   f"Ссылка действительна до: {response.json()['payment_url_lifetime']}"
             allure.attach(res, 'Ссылка на оплату', allure.attachment_type.TEXT)
+        else:
+            assert_that("payment_url", is_in(response.json()), "Ссылка на оплату не получена")
 
     @allure.step("Получить договор")
     def get_agreement(self, agreement_status):
@@ -124,6 +142,7 @@ class Agreement:
         response = self.api.get(AGREEMENTS.GET.format(self.agreement_id))
         data_contract.body_with_update_contract["terms"]["kasko"]["purchase_date"] = \
             str(datetime.date.today() - datetime.timedelta(days=5))
+        # data_contract.body_with_update_contract["terms"]["kasko"]["franchise"] = data_contract.body_create_contract["terms"]["kasko"]["franchise"]
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, equal_to(200))
         with allure.step("Условия полученного договора совпадают с условями в отправленном контракте при его создании"):

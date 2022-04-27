@@ -6,6 +6,7 @@ from core.api.contracts import data
 from jsonschema import validate
 import allure
 import datetime
+# TODO: добавить в отчет сумму премии
 
 
 class Contract:
@@ -14,6 +15,7 @@ class Contract:
     def __init__(self, franchise):
         self.contract_id = None
         self.franchise = franchise
+        self.cnt_get_calc = 0
 
     @allure.step("Создать контракт")
     def create_contract(self):
@@ -43,19 +45,26 @@ class Contract:
 
     @allure.step("Получить расчет")
     def get_calculation(self):
+        max_returns = 20
         response = self.api.get(CONTRACTS.CALCULATE.format(self.contract_id))
         status = response.json()["products"][0]["status"]
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, equal_to(200))
         with allure.step("Проверить статус расчета"):
-            if status == "Executing" or status == "InQueue":
-                time.sleep(5)
-                with allure.step(f"Статус расчета {status}. Проверить расчет еще раз."):
-                    self.get_calculation()
+            if self.cnt_get_calc <= max_returns:
+                self.cnt_get_calc += 1
+                print(f"Попытка получить расчет: {self.cnt_get_calc}")
+                if status == "Executing" or status == "InQueue":
+                    time.sleep(5)
+                    with allure.step(f"Статус расчета {status}. Проверить расчет еще раз."):
+                        self.get_calculation()
+                else:
+                    assert_that(status, equal_to("Success"), f"Получена ошибка: {response.json()['products'][0]['errors']}")
+                    with allure.step("Проверить схему ответа"):
+                        validate(response.json(), data.schema_get_calculation)
             else:
-                assert_that(status, equal_to("Success"), f"Получена ошибка: {response.json()['products'][0]['errors']}")
-                with allure.step("Проверить схему ответа"):
-                    validate(response.json(), data.schema_get_calculation)
+                assert_that(self.cnt_get_calc, is_not(equal_to(max_returns)), "Выполнено слишком много попыток "
+                                                                              "получить расчет")
 
     @allure.step("Получить контракт")
     def get_contract(self):
