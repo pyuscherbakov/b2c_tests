@@ -13,7 +13,7 @@ class TestContracts:
         contract.create_contract()
 
     @pytest.mark.parametrize("product", [
-        # "ingos_kasko",
+        "ingos_kasko",
         "alfastrah_kasko"])
     @allure.feature('Контракт')
     @allure.story('Создать расчет')
@@ -32,7 +32,7 @@ class TestContracts:
         contract.get_contract()
 
     @pytest.mark.parametrize("product", [
-        # "ingos_kasko",
+        "ingos_kasko",
         "alfastrah_kasko"])
     @allure.feature('Контракт')
     @allure.story('Получить расчет')

@@ -16,13 +16,12 @@ class TestAuth:
         url = settings.base_url + AUTH
         user = settings.default_user
         r = requests.post(url, verify=False, json={"email": user[0], "password": user[1]})
-        logger.info(f"Отправить POST запрос на авторизацию.\n"
-                    f"Логин: {user[0]}; Пароль: {user[1]}\n"
-                    f"Ответ: {r.json()}\n")
+        logger.info(f"Отправить POST запрос на авторизацию. Аккаунт: {user[0]}:{user[1]}. Тело ответа: {r.json()}")
         with allure.step("Проверить статус код ответа"):
             assert_that(r.status_code, equal_to(200))
         with allure.step("Токен получен"):
             assert_that(r.json()["data"]["token"], is_not(None))
+            logger.info(f"Токен получен. Аккаунт: {user[0]}:{user[1]}")
         with allure.step("Проверить схему ответа"):
             validate(r.json(), schema_with_success_auth)
 
@@ -33,12 +32,11 @@ class TestAuth:
         url = settings.base_url + AUTH
         user = ("invalid@mail.ru", "wrong_password")
         r = requests.post(url, verify=False, json={"email": user[0], "password": user[1]})
-        logger.info(f"Отправить POST запрос на авторизацию.\n"
-                    f"Логин: {user[0]}; Пароль: {user[1]}\n"
-                    f"Ответ: {r.json()}\n")
+        logger.info(f"Отправить POST запрос на авторизацию. Аккаунт: {user[0]}:{user[1]}. Тело ответа: {r.json()}")
         with allure.step("Проверить статус код ответа"):
             assert_that(r.status_code, equal_to(400))
         with allure.step("Токен не получен"):
+            logger.info(f"Токен не получен. Аккаунт: {user[0]}:{user[1]}")
             assert_that(r.json(), is_not(has_key("data")))
         with allure.step("Проверить схему ответа"):
             validate(r.json(), schema_with_not_success_auth)
