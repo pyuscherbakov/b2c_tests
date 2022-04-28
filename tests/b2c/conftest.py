@@ -9,7 +9,7 @@ def write_logs(request):
 
     module = request.module
     class_ = request.cls
-    name = request.node.name + ".log"
+    name = request.node.originalname + ".log"
 
     if module:
         log_path /= module.__name__.replace("tests.", "")
@@ -18,7 +18,7 @@ def write_logs(request):
 
     log_path.mkdir(parents=True, exist_ok=True)
 
-    log_path /= class_.__name__ + ".log"
+    log_path /= name
 
     logger.remove()
     logger.configure(handlers=[{"sink": log_path,
