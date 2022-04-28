@@ -1,5 +1,4 @@
 import time
-
 import pytest
 from hamcrest import *
 from core.utils.api_client import ApiClient
@@ -10,7 +9,6 @@ import allure
 from jsonschema import validate
 from datetime import date
 import datetime
-# TODO: Установить счетчик запросов
 
 
 class Agreement:
@@ -26,6 +24,7 @@ class Agreement:
 
     @allure.step("Создать договор")
     def create_agreement(self):
+        logger.info(f"Вызван метод создания договора. Контракт: {self.contract_id}. Продукт: {self.product}")
         max_returns = 10
         data.body_create_agreement["contract_id"] = self.contract_id
         data.body_create_agreement["product_id"] = self.product
@@ -43,7 +42,8 @@ class Agreement:
                     with allure.step(f"Проверить схему ответа при статусе {response['status']}"):
                         validate(response, data.schema_with_not_success)
                     with allure.step(f"Договор не имеет статус 'error'"):
-                        assert_that(response["status"], is_not(equal_to("error")))
+                        assert_that(response["status"], is_not(equal_to("Error")),
+                                    f"Получена ошибка: {response['errors']}")
                     time.sleep(10)
                     self.create_agreement()
             else:
