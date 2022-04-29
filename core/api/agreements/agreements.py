@@ -256,7 +256,8 @@ class Agreement:
 
         data_contract.body_with_update_contract["terms"]["kasko"]["purchase_date"] = \
             str(datetime.date.today() - datetime.timedelta(days=5))
-        # data_contract.body_with_update_contract["terms"]["kasko"]["franchise"] = data_contract.body_create_contract["terms"]["kasko"]["franchise"]
+        # data_contract.body_with_update_contract["terms"]["kasko"]["franchise"] =
+        # data_contract.body_create_contract["terms"]["kasko"]["franchise"]
 
         with allure.step("Проверить статус код ответа"):
             assert_that(response.status_code, equal_to(200))
@@ -290,9 +291,8 @@ class Agreement:
 
         with allure.step("Проверить полученные документы"):
             for document in response.json():
-                with allure.step(f"Статус документа: {document['name']}– Success"):
-                    assert_that(document["success"], equal_to(True), f"Ошибка документа: {document['name']}."
-                                                                     f"Сообщение: {document['messages']}")
+                assert_that(document["success"], equal_to(True), f"Ошибка документа: {document['name']}."
+                                                                 f"Сообщение: {document['messages']}")
 
         with allure.step("Проверить схему ответа"):
             validate(response.json(), data.schema_documents)
