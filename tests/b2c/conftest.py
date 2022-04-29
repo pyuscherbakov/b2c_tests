@@ -3,6 +3,9 @@ from loguru import logger
 import pytest
 
 
+# TODO: Ссылки на оплату
+
+
 @pytest.fixture(autouse=True)
 def write_logs(request):
     log_path = Path("tests") / "b2c" / "logs"
@@ -22,10 +25,9 @@ def write_logs(request):
 
     logger.remove()
     logger.configure(handlers=[{"sink": log_path,
-                                "level": "TRACE",
+                                "level": "DEBUG",
                                 "format": "{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
                                 "rotation": "2 days",
                                 "compression": "zip"
                                 }])
     logger.enable("my_package")
-
