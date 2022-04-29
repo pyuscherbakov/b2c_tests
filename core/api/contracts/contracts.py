@@ -34,9 +34,6 @@ class Contract:
 
         response = response.json()
 
-        with allure.step("Полученное в ответе поле ID не пустое"):
-            assert_that(response["data"]["id"], is_not(None))
-
         self.contract_id = response["data"]["id"]
 
         logger.info(f"Создан контракт {self.contract_id}")
