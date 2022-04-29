@@ -5,7 +5,7 @@ import pytest
 
 
 @pytest.mark.parametrize("product", [
-    # "ingos_kasko",
+    "ingos_kasko",
     "alfastrah_kasko"
 ])
 @pytest.mark.parametrize("franchise", [
@@ -68,6 +68,7 @@ class TestAgreement:
         agreement.create_agreement()
         agreement.issue_agreement()
         agreement.agreement_get_status()
+        agreement.get_payment_url()
         agreement.attach_agreement_data()
 
     @allure.feature('Договор')
