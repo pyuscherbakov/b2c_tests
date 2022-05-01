@@ -41,5 +41,10 @@ class TestAuth:
         with allure.step("Проверить схему ответа"):
             validate(r.json(), schema_with_not_success_auth)
 
-    def test(self):
+    def test_1(self):
         pass
+
+    def test_2(self):
+        pass
+
+
