@@ -40,3 +40,11 @@ class TestAuth:
             assert_that(r.json(), is_not(has_key("data")))
         with allure.step("Проверить схему ответа"):
             validate(r.json(), schema_with_not_success_auth)
+
+    def test_1(self):
+        pass
+
+    def test_2(self):
+        pass
+
+
